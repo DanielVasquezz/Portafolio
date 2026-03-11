@@ -5,19 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daniel Vasquez - Backend Developer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <nav id="navbar">
-        <div class="nav-logo">DV.dev</div>
-        <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>    
-        </ul>
-    </nav>
+  <div class="nav-inner">
+    <div class="nav-logo">DV<span>.dev</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <!-- Este botón solo se ve en móvil (CSS lo controla) -->
+    <button class="nav-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <a href="mailto:danielvasquezorellana03@gmail.com" class="nav-cta">Hire me</a>
+  </div>
+</nav>
 
     <section id="hero">
     <h1>Hi, I'm <span class="highlight">Daniel Vásquez</span></h1>
@@ -28,7 +38,7 @@
   </section>
 
   <!-- ABOUT -->
-  <section id="about">
+  <section id="about" class="reveal">
     <h2>About Me</h2>
     <p>
       Software Development student from El Salvador with real project experience
@@ -40,7 +50,7 @@
 
 
   <!-- SKILLS -->
-  <section id="skills">
+  <section id="skills" class="reveal">
     <h2>Skills</h2>
     <div class="skills-grid">
 
@@ -78,7 +88,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section id="projects">
+  <section id="projects" class="reveal">
     <h2>Projects</h2>
     <div class="projects-grid">
 
@@ -119,7 +129,7 @@
   </section>
 
   <!-- CONTACT -->
-  <section id="contact">
+  <section id="contact" class="reveal">
     <h2>Let's Talk</h2>
     <p>Open to remote opportunities, freelance projects and collaborations.</p>
 
