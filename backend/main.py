@@ -48,7 +48,7 @@ async def send_email_notification(name: str, email: str, message: str):
         """
         msg = MessageSchema(
             subject    = f"Portfolio: mensaje de {name}",
-            recipients = ['danielvasquezorellana03@gmail.com'],
+            recipients = ['arrupea2025@gmail.com'],
             body       = html,
             subtype    = 'html'
         )
