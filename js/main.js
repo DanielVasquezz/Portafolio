@@ -1,67 +1,94 @@
 import { postContact } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Lógica del Navbar (Corregido el selector 'n#navbar' a '#navbar')
-    const navbar = document.querySelector('#navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar?.classList.add('scrolled');
-        } else {
-            navbar?.classList.remove('scrolled');
-        }
+
+  // ── 1. NAVBAR SCROLL ──────────────────────────────
+  const navbar = document.querySelector('#navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar?.classList.add('scrolled');
+    } else {
+      navbar?.classList.remove('scrolled');
+    }
+  });
+
+  // ── 2. MENÚ HAMBURGUESA ───────────────────────────
+  const toggle   = document.querySelector('.nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      toggle.classList.toggle('open');
     });
 
-    // 2. Menú Hamburguesa
-    const toggle = document.querySelector('.nav-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        toggle.classList.remove('open');
+      });
+    });
+  }
 
-    if (toggle && navLinks) {
-        toggle.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
-            toggle.classList.toggle('open');
-        });
+  // ── 3. SCROLL REVEAL ──────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
 
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('open');
-                toggle.classList.remove('open');
-            });
-        });
-    }
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // 3. Intersection Observer (Animaciones reveal)
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
+  // ── 4. FORMULARIO ─────────────────────────────────
+  const form       = document.querySelector('#contact-form'); // ← corregido
+  const responseEl = document.querySelector('#form-response');
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    // 4. Manejo del Formulario (Aquí es donde va el postContact)
-    const form = document.querySelector('#tu-formulario-id'); // Cambia por tu ID real
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Extraer datos de los inputs
-            const formData = new FormData(form);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const message = formData.get('message');
+      const name    = document.querySelector('#name').value.trim();
+      const email   = document.querySelector('#email').value.trim();
+      const message = document.querySelector('#message').value.trim();
 
-            try {
-                await postContact(name, email, message);
-                showResponse('✅ Message sent! I\'ll get back to you soon.', 'success');
-                form.reset();
-            } catch (error) {
-                console.error('Error:', error);
-                showResponse('❌ Could not connect. Try emailing me directly.', 'error');
-            }
-        });
-    }
+      if (!name || !email || !message) {
+        showResponse('Please fill in all fields.', 'error');
+        return;
+      }
+
+      const button       = form.querySelector('button');
+      button.disabled    = true;
+      button.textContent = 'Sending...';
+
+      try {
+        await postContact(name, email, message);
+        showResponse('✅ Message sent! I\'ll get back to you soon.', 'success');
+        form.reset();
+      } catch (error) {
+        console.error('Error:', error);
+        showResponse('❌ Could not connect. Try emailing me directly.', 'error');
+      } finally {
+        button.disabled    = false;
+        button.textContent = 'Send message';
+      }
+    });
+  }
+
+  // ── HELPER — muestra mensaje de respuesta ─────────
+  // Esta función la usan el formulario y cualquier otro
+  // componente que necesite mostrar feedback al usuario
+  function showResponse(message, type) {
+    responseEl.textContent   = message;
+    responseEl.className     = type;
+    responseEl.style.display = 'block';
+
+    // Se oculta solo después de 5 segundos
+    setTimeout(() => {
+      responseEl.style.display = 'none';
+    }, 5000);
+  }
+
 });
