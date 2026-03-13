@@ -1,0 +1,1110 @@
+/* ═══════════════════════════════════════════════════════════
+   DANIEL VÁSQUEZ · PORTFOLIO
+   Tema: Blanco + Azul profesional
+   
+   ÍNDICE:
+   1.  Variables & Reset
+   2.  Tipografía base
+   3.  Navbar
+   4.  Hero
+   5.  Botones
+   6.  Secciones generales
+   7.  Skills
+   8.  Projects
+   9.  Contact
+   10. Footer
+   11. Animaciones
+   12. Responsive (móvil)
+═══════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════
+   1. VARIABLES & RESET
+   
+   Las variables CSS (custom properties) son como constantes
+   en programación. Las defines una vez aquí y las reutilizas
+   en todo el archivo. Si quieres cambiar el azul principal,
+   solo cambias --accent aquí y cambia en TODO el sitio.
+══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Fondos */
+  --bg:          #FFFFFF;   /* Fondo principal — blanco puro */
+  --bg-soft:     #F0F7FF;   /* Azul muy suave para secciones alternas */
+  --surface:     #F8FAFF;   /* Cards y superficies elevadas */
+
+  /* Azules — de más oscuro a más claro */
+  --blue-dark:   #0D47A1;   /* Azul muy oscuro, para títulos importantes */
+  --accent:      #1565C0;   /* Azul principal — botones, links, acentos */
+  --accent-mid:  #1E88E5;   /* Azul medio — hover states */
+  --accent-light:#42A5F5;   /* Azul claro — tags, detalles */
+  --accent-glow: #90CAF9;   /* Azul pálido — borders, fondos de tags */
+
+  /* Textos */
+  --text:        #0D1B2A;   /* Casi negro — texto principal */
+  --text-soft:   #37474F;   /* Gris oscuro — texto secundario */
+  --muted:       #78909C;   /* Gris medio — metadata, labels */
+
+  /* Bordes y separadores */
+  --border:      #BBDEFB;   /* Azul muy claro — bordes suaves */
+  --border-dark: #90CAF9;   /* Azul claro — bordes en hover */
+
+  /* Estado y feedback */
+  --success:     #2E7D32;   /* Verde — confirmación de formulario */
+
+  /* Tipografías */
+  --font-main: 'Syne', sans-serif;       /* Títulos y UI */
+  --font-mono: 'Space Mono', monospace;  /* Código, labels, tags */
+
+  /* Sombras */
+  --shadow-sm: 0 2px 8px rgba(21, 101, 192, 0.08);
+  --shadow-md: 0 8px 24px rgba(21, 101, 192, 0.12);
+  --shadow-lg: 0 16px 40px rgba(21, 101, 192, 0.16);
+}
+
+/* Reset universal
+   Por defecto, los browsers aplican margin y padding a los elementos.
+   Esto los limpia para que TÚ controles el espaciado. */
+*, *::before, *::after {
+  box-sizing: border-box; /* El padding y border se cuentan DENTRO del ancho */
+  margin: 0;
+  padding: 0;
+}
+
+/* scroll-behavior: smooth hace que los links tipo href="#skills"
+   desplacen la página suavemente en vez de saltar bruscamente */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.6;         /* Espacio entre líneas de texto */
+  overflow-x: hidden;       /* Oculta scroll horizontal accidental */
+}
+
+/* Todos los links sin subrayado por defecto.
+   Cada componente define su propio estilo de link */
+a {
+  text-decoration: none;
+  color: var(--accent);
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--accent-mid);
+}
+
+/* Las imágenes no se desbordan de su contenedor */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   2. TIPOGRAFÍA BASE
+   
+   Jerarquía visual: h1 > h2 > h3 > p
+   Cada nivel tiene su propio tamaño y peso.
+══════════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-main);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+p {
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   3. NAVBAR
+   
+   position: fixed = se queda pegada al top siempre.
+   backdrop-filter: blur = efecto "cristal esmerilado" moderno.
+   z-index: 100 = se superpone sobre todo el contenido.
+══════════════════════════════════════════════════════════ */
+
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
+
+  /* Blanco semi-transparente con desenfoque */
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* Safari necesita el prefijo -webkit- */
+
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+
+  /* z-index controla qué elemento está "encima" en capas.
+     100 es suficiente para que esté sobre todo el contenido. */
+  z-index: 100;
+
+  /* Transición para cuando el JS le agregue la clase .scrolled */
+  transition: box-shadow 0.3s;
+}
+
+/* Clase que JavaScript agrega al hacer scroll */
+#navbar.scrolled {
+  box-shadow: var(--shadow-md);
+}
+
+/* Logo del navbar */
+.nav-logo {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+/* El .dev del logo en gris */
+.nav-logo span {
+  color: var(--muted);
+}
+
+/* Lista de links — display flex los pone en fila horizontal */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;      /* Espacio entre cada link */
+  list-style: none; /* Sin bullets de lista */
+}
+
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  position: relative; /* Necesario para el ::after del underline */
+  transition: color 0.2s;
+}
+
+/* Línea animada debajo de cada link al hacer hover
+   Truco: empieza con scaleX(0) y crece a scaleX(1) */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);         /* Empieza invisible */
+  transform-origin: left;       /* Crece desde la izquierda */
+  transition: transform 0.25s;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+.nav-links a:hover::after {
+  transform: scaleX(1);         /* Se hace visible con hover */
+}
+
+/* Botón "Hire Me" del navbar */
+.nav-cta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--accent);
+  padding: 0.55rem 1.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.nav-cta:hover {
+  background: var(--blue-dark);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* Botón hamburguesa para móvil — oculto en desktop */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--accent);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Animación hamburguesa → X cuando el menú está abierto */
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+
+/* ══════════════════════════════════════════════════════════
+   4. HERO
+   
+   min-height: 100vh = ocupa toda la altura de la pantalla.
+   display flex + justify-content center = centra el contenido.
+   El padding-top: 100px empuja el contenido debajo del navbar.
+══════════════════════════════════════════════════════════ */
+
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 100px 5% 60px;
+
+  /* Líneas de cuadrícula decorativas en el fondo */
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-color: var(--bg);
+
+  position: relative;
+}
+
+/* Degradado que suaviza la cuadrícula hacia abajo */
+#hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(transparent, var(--bg));
+  pointer-events: none; /* No bloquea clicks */
+}
+
+/* Etiqueta sobre el título — el pequeño texto de arriba */
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  /* Animación de entrada */
+  opacity: 0;
+  animation: fadeUp 0.6s 0.1s forwards;
+}
+
+/* La línea decorativa antes del texto */
+.hero-tag::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background: var(--accent);
+}
+
+/* Título principal h1
+   clamp(min, preferido, max) = tamaño fluido según pantalla */
+#hero h1 {
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+
+  opacity: 0;
+  animation: fadeUp 0.6s 0.25s forwards;
+}
+
+/* El apellido en degradado azul */
+.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text;   /* Recorta el fondo al texto */
+  -webkit-text-fill-color: transparent; /* Hace el texto transparente para ver el fondo */
+  background-clip: text;
+}
+
+/* Subtítulo debajo del nombre */
+.hero-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  color: var(--text-soft);
+  margin-bottom: 0.75rem;
+  max-width: 560px;
+  line-height: 1.8;
+
+  opacity: 0;
+  animation: fadeUp 0.6s 0.4s forwards;
+}
+
+/* Ubicación con punto verde animado */
+.hero-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+
+  opacity: 0;
+  animation: fadeUp 0.6s 0.5s forwards;
+}
+
+/* Punto pulsante de "disponible" */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Contenedor de botones */
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap; /* En móvil se apilan */
+
+  opacity: 0;
+  animation: fadeUp 0.6s 0.6s forwards;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   5. BOTONES
+   
+   display: inline-block es necesario para que padding y
+   transform funcionen en elementos <a>.
+══════════════════════════════════════════════════════════ */
+
+.btn-primary {
+  display: inline-block;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.9rem 2.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--blue-dark);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Botón secundario — solo borde, sin fondo */
+.btn-outline {
+  display: inline-block;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.9rem 2.2rem;
+  border: 1.5px solid var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  transition: background 0.2s, transform 0.15s, color 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--bg-soft);
+  color: var(--blue-dark);
+  border-color: var(--blue-dark);
+  transform: translateY(-2px);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   6. SECCIONES GENERALES
+   
+   Alternamos el color de fondo entre secciones para dar
+   separación visual sin usar líneas o borders.
+══════════════════════════════════════════════════════════ */
+
+section {
+  padding: 6rem 5%;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+
+section > * {
+  max-width: 980px;    /* Ancho máximo del contenido */
+  margin-left: auto;   /* auto + auto = centra el elemento */
+  margin-right: auto;
+}
+
+#navbar {
+  
+    max-width: 100%;
+}
+
+.nav-inner {
+    max-width: 980px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+
+
+/* Contenedor interno que limita el ancho máximo */
+.container {
+  max-width: 1100px;
+  margin: 0 auto; /* Centra horizontalmente */
+}
+
+/* Secciones de fondo alterno */
+section:nth-child(even) {
+  background: var(--bg-soft);
+}
+
+/* Label pequeño sobre cada título de sección */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-mid);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-label::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--accent-light);
+}
+
+/* Título de cada sección */
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 3rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+/* Línea azul decorativa bajo el título */
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 2px;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   7. SKILLS
+   
+   CSS Grid con auto-fill crea las columnas automáticamente
+   según el espacio disponible. No necesitas media queries
+   para que sea responsivo — el grid lo hace solo.
+══════════════════════════════════════════════════════════ */
+
+#skills {
+  background: var(--bg-soft);
+}
+
+/* Barra de estadísticas */
+.stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;             /* El gap crea la "grilla" de separación */
+  background: var(--border); /* El fondo del wrapper se ve entre los items */
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+
+.stat {
+  flex: 1;
+  min-width: 120px;
+  background: var(--bg);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-num {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Grid de cards de skills */
+.skills-grid {
+  display: grid;
+  /* auto-fill llena el espacio con columnas de mínimo 280px */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.skill-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+
+  /* transition lista la propiedad que se va a animar */
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+/* Barra de color en la parte superior de cada card */
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transform: scaleX(0);     /* Oculto por defecto */
+  transform-origin: left;
+  transition: transform 0.35s;
+}
+
+.skill-card:hover {
+  border-color: var(--border-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.skill-card:hover::before {
+  transform: scaleX(1);     /* Visible en hover */
+}
+
+/* Ícono del skill */
+.skill-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.skill-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.skill-card p {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+
+/* Tags de tecnologías */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 0.25rem 0.65rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--accent-glow);
+  color: var(--accent);
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+}
+
+/* Tags de skills "en aprendizaje" */
+.tag.learning {
+  background: #EDE7F6;
+  border-color: #B39DDB;
+  color: #5E35B1;
+}
+
+/* Badge "Learning" en la esquina */
+.learning-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  padding: 0.2rem 0.5rem;
+  background: #EDE7F6;
+  border: 1px solid #B39DDB;
+  color: #5E35B1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   8. PROJECTS
+══════════════════════════════════════════════════════════ */
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;  /* Apila los elementos verticalmente */
+  gap: 0.75rem;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Acento de color en el lado izquierdo */
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-light));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.35s;
+}
+
+.project-card:hover {
+  border-color: var(--border-dark);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+}
+
+.project-card:hover::before {
+  transform: scaleY(1);
+}
+
+/* Número del proyecto — decorativo */
+.project-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--accent-light);
+  letter-spacing: 0.1em;
+}
+
+.project-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.project-card p {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--muted);
+  line-height: 1.7;
+  flex: 1; /* Empuja el link al fondo de la card */
+}
+
+/* Tags del stack de tecnologías */
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.project-tags span {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 0.25rem 0.65rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  border-radius: 2px;
+}
+
+/* Link "View on GitHub" */
+.project-link {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: gap 0.2s, color 0.2s;
+}
+
+.project-link:hover {
+  color: var(--blue-dark);
+  gap: 0.7rem; /* La flecha "→" se aleja un poco */
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   9. CONTACT
+   
+   El formulario es el componente más interactivo.
+   Los estados :focus son importantes para accesibilidad —
+   el usuario sabe en qué campo está escribiendo.
+══════════════════════════════════════════════════════════ */
+
+#contact {
+  background: var(--bg-soft);
+}
+
+.contact-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Info de contacto — lado izquierdo */
+.contact-info p {
+  font-size: 1rem;
+  color: var(--text-soft);
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  margin-bottom: 1rem;
+}
+
+.contact-item a {
+  color: var(--accent);
+  transition: color 0.2s;
+}
+
+.contact-item a:hover {
+  color: var(--blue-dark);
+}
+
+/* Formulario — lado derecho */
+#contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Estilos base compartidos para inputs y textarea */
+#contact-form input,
+#contact-form textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.9rem 1rem;
+
+  /* outline: none elimina el borde azul del browser */
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* El placeholder es el texto que aparece cuando el campo está vacío */
+#contact-form input::placeholder,
+#contact-form textarea::placeholder {
+  color: var(--muted);
+}
+
+/* :focus se activa cuando el usuario hace click en el campo */
+#contact-form input:focus,
+#contact-form textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1); /* Halo azul sutil */
+}
+
+#contact-form textarea {
+  min-height: 140px;
+  resize: vertical; /* El usuario puede agrandar verticalmente */
+}
+
+/* Botón de enviar */
+#contact-form button {
+  background: var(--accent);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 1rem;
+  border: none;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+#contact-form button:hover {
+  background: var(--blue-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Estado "enviando..." del botón — JavaScript agrega esta clase */
+#contact-form button:disabled {
+  background: var(--muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mensaje de respuesta debajo del formulario */
+#form-response {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--success);
+  padding: 0.75rem 1rem;
+  border-radius: 3px;
+  display: none; /* JavaScript lo muestra con display: block */
+}
+
+#form-response.error {
+  color: #C62828;
+  background: #FFEBEE;
+  border: 1px solid #FFCDD2;
+}
+
+#form-response.success {
+  color: var(--success);
+  background: #E8F5E9;
+  border: 1px solid #C8E6C9;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   10. FOOTER
+══════════════════════════════════════════════════════════ */
+
+footer {
+  background: var(--text);   /* Fondo casi negro para contraste */
+  color: var(--muted);
+  padding: 2.5rem 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #90A4AE;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #90A4AE;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--accent-light);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   11. ANIMACIONES
+   
+   fadeUp: los elementos entran desde abajo con fade.
+   Se activa con la clase .visible que JavaScript agrega
+   cuando el elemento entra en el viewport (IntersectionObserver).
+   
+   pulse: el punto verde que "respira".
+══════════════════════════════════════════════════════════ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* Estado inicial de elementos que se revelan al hacer scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* JavaScript agrega .visible cuando el elemento entra en pantalla */
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delay escalonado para cards — se revelan una por una */
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+
+
+/* ══════════════════════════════════════════════════════════
+   12. RESPONSIVE — MOBILE FIRST
+   
+   @media (max-width: 768px) = pantallas menores a 768px.
+   768px es el breakpoint estándar para tablets/móviles.
+   
+   Aquí sobreescribimos estilos de desktop para que
+   todo se vea bien en pantallas pequeñas.
+══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* Navbar — ocultar links, mostrar hamburguesa */
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 64px;        /* Debajo del navbar */
+    left: 0; right: 0;
+    background: var(--bg);
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Cuando JavaScript agrega .open, el menú aparece */
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 1.1rem;
+    font-size: 0.85rem;
+  }
+
+  .nav-links a::after {
+    display: none; /* Sin underline animado en móvil */
+  }
+
+  .nav-cta { display: none; }
+  .nav-toggle { display: flex; }
+
+  /* Hero */
+  #hero h1 { font-size: 2.4rem; }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-outline {
+    text-align: center;
+  }
+
+  /* Contact — de 2 columnas a 1 */
+  .contact-wrapper {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  /* Footer — centrado en móvil */
+  footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 480px) {
+  section { padding: 4rem 5%; }
+  #hero h1 { font-size: 2rem; }
+  .skills-grid,
+  .projects-grid {
+    grid-template-columns: 1fr; /* Una sola columna */
+  }
+} 
