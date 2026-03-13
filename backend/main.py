@@ -50,31 +50,40 @@ async def create_contact(
     contact: schemas.ContactCreate,
     db: Session = Depends(get_db)
 ):
-    # 1. Guardar en DB
+    # Guardar en DB
     db_message = models.Message(**contact.model_dump())
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
 
-    # 2. Enviar email solo si las variables están configuradas
-    # El if evita que crashee si las variables no están
-    if os.getenv('MAIL_USERNAME') and os.getenv('MAIL_PASSWORD'):
-        html = f"""
-        <h2>Nuevo mensaje en tu portafolio 🎉</h2>
-        <p><b>Nombre:</b> {contact.name}</p>
-        <p><b>Email:</b> <a href="mailto:{contact.email}">{contact.email}</a></p>
-        <p><b>Mensaje:</b></p>
-        <p>{contact.message}</p>
-        """
+    # Debug — verifica que las variables existen
+    mail_user = os.getenv('MAIL_USERNAME')
+    mail_pass = os.getenv('MAIL_PASSWORD')
+    print(f"MAIL_USERNAME exists: {bool(mail_user)}")
+    print(f"MAIL_PASSWORD exists: {bool(mail_pass)}")
 
-        email = MessageSchema(
-            subject    = f"Portfolio: mensaje de {contact.name}",
-            recipients = ['danielvasquezorellana03@gmail.com'],
-            body       = html,
-            subtype    = 'html'
-        )
+    if mail_user and mail_pass:
+        try:
+            html = f"""
+            <h2>Nuevo mensaje en tu portafolio 🎉</h2>
+            <p><b>Nombre:</b> {contact.name}</p>
+            <p><b>Email:</b> {contact.email}</p>
+            <p><b>Mensaje:</b> {contact.message}</p>
+            """
+            email = MessageSchema(
+                subject    = f"Portfolio: mensaje de {contact.name}",
+                recipients = ['danielvasquezorellana03@gmail.com'],
+                body       = html,
+                subtype    = 'html'
+            )
+            fm = FastMail(mail_config)
+            await fm.send_message(email)
+            print("✅ Email enviado correctamente")
 
-        fm = FastMail(mail_config)
-        await fm.send_message(email)
+        except Exception as e:
+            # Captura CUALQUIER error del email y lo muestra
+            print(f"❌ Error enviando email: {e}")
+    else:
+        print("❌ Variables de email no encontradas")
 
     return db_message
