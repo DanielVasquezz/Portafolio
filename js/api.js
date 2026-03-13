@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:8000";
+const API_URL = location.hostname === 'localhost' || 
+location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://portafolio-production-93f7.up.railway.app';
 
 export async function postContact(name, email, message){
 
@@ -18,4 +19,4 @@ export async function postContact(name, email, message){
     }
 
     return await res.json();
-}
+}       
