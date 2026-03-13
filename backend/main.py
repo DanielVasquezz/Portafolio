@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from sqlalchemy.orm import Session
@@ -26,7 +26,6 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# Lee las variables de Railway — nunca hardcodees contraseñas
 mail_config = ConnectionConfig(
     MAIL_USERNAME = os.getenv('MAIL_USERNAME'),
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD'),
@@ -37,6 +36,28 @@ mail_config = ConnectionConfig(
     MAIL_SSL_TLS  = False,
 )
 
+# Función separada para enviar el email
+# Se ejecuta en background — no bloquea la respuesta
+async def send_email_notification(name: str, email: str, message: str):
+    try:
+        html = f"""
+        <h2>Nuevo mensaje en tu portafolio 🎉</h2>
+        <p><b>Nombre:</b> {name}</p>
+        <p><b>Email:</b> {email}</p>
+        <p><b>Mensaje:</b> {message}</p>
+        """
+        msg = MessageSchema(
+            subject    = f"Portfolio: mensaje de {name}",
+            recipients = ['danielvasquezorellana03@gmail.com'],
+            body       = html,
+            subtype    = 'html'
+        )
+        fm = FastMail(mail_config)
+        await fm.send_message(msg)
+        print("✅ Email enviado")
+    except Exception as e:
+        print(f"❌ Error email: {e}")
+
 @app.get('/')
 def root():
     return {'message': 'Portfolio API running ✅'}
@@ -45,45 +66,29 @@ def root():
 def health_check():
     return {'status': 'ok'}
 
+# BackgroundTasks permite ejecutar tareas después de responder
 @app.post('/contact', response_model=schemas.ContactResponse)
 async def create_contact(
     contact: schemas.ContactCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = BackgroundTasks()
 ):
-    # Guardar en DB
+    # 1. Guardar en DB
     db_message = models.Message(**contact.model_dump())
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
 
-    # Debug — verifica que las variables existen
-    mail_user = os.getenv('MAIL_USERNAME')
-    mail_pass = os.getenv('MAIL_PASSWORD')
-    print(f"MAIL_USERNAME exists: {bool(mail_user)}")
-    print(f"MAIL_PASSWORD exists: {bool(mail_pass)}")
-
-    if mail_user and mail_pass:
-        try:
-            html = f"""
-            <h2>Nuevo mensaje en tu portafolio 🎉</h2>
-            <p><b>Nombre:</b> {contact.name}</p>
-            <p><b>Email:</b> {contact.email}</p>
-            <p><b>Mensaje:</b> {contact.message}</p>
-            """
-            email = MessageSchema(
-                subject    = f"Portfolio: mensaje de {contact.name}",
-                recipients = ['danielvasquezorellana03@gmail.com'],
-                body       = html,
-                subtype    = 'html'
-            )
-            fm = FastMail(mail_config)
-            await fm.send_message(email)
-            print("✅ Email enviado correctamente")
-
-        except Exception as e:
-            # Captura CUALQUIER error del email y lo muestra
-            print(f"❌ Error enviando email: {e}")
-    else:
-        print("❌ Variables de email no encontradas")
+    # 2. Enviar email en background si las variables existen
+    # add_task agrega la función a una cola de tareas
+    # FastAPI la ejecuta DESPUÉS de devolver la respuesta
+    # Por eso el usuario no espera — recibe ✅ inmediatamente
+    if os.getenv('MAIL_USERNAME') and os.getenv('MAIL_PASSWORD'):
+        background_tasks.add_task(
+            send_email_notification,
+            contact.name,
+            contact.email,
+            contact.message
+        )
 
     return db_message
