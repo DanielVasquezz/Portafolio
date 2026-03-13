@@ -4,6 +4,20 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 from database import engine, get_db
+import os
+
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+
+
+if ENVIRONMENT == 'production':
+    origins = [
+        'https://danielvasquezz.github.io',
+    ]
+else:
+    origins = [
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+    ]
 
 models.Base.metadata.create_all(bind=engine)
 
