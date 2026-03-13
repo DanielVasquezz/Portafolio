@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from sqlalchemy.orm import Session
 import models
 import schemas
 from database import engine, get_db
 import os
+import resend
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -28,32 +28,22 @@ app.add_middleware(
 
 async def send_email_notification(name: str, email: str, message: str):
     try:
-        mail_config = ConnectionConfig(
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME'),
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD'),
-    MAIL_FROM     = os.getenv('MAIL_USERNAME'),
-    MAIL_PORT     = 465,        # ← cambia 587 por 465
-    MAIL_SERVER   = 'smtp.gmail.com',
-    MAIL_STARTTLS = False,      # ← False
-    MAIL_SSL_TLS  = True,       # ← True
-        )
-        html = f"""
-        <h2>Nuevo mensaje en tu portafolio!</h2>
-        <p><b>Nombre:</b> {name}</p>
-        <p><b>Email:</b> {email}</p>
-        <p><b>Mensaje:</b> {message}</p>
-        """
-        msg = MessageSchema(
-            subject    = f"Portfolio: mensaje de {name}",
-            recipients = ['danielvasquezorellana03@gmail.com'],
-            body       = html,
-            subtype    = 'html'
-        )
-        fm = FastMail(mail_config)
-        await fm.send_message(msg)
-        print("Email enviado")
+        resend.api_key = os.getenv('RESEND_API_KEY')
+
+        resend.Emails.send({
+            'from': 'Portfolio <onboarding@resend.dev>',
+            'to': 'danielvasquezorellana03@gmail.com',
+            'subject': f'Portfolio: mensaje de {name}',
+            'html': f"""
+                <h2>Nuevo mensaje en tu portafolio!</h2>
+                <p><b>Nombre:</b> {name}</p>
+                <p><b>Email:</b> {email}</p>
+                <p><b>Mensaje:</b> {message}</p>
+            """
+        })
+        print('✅ Email enviado con Resend')
     except Exception as e:
-        print(f"Error email: {e}")
+        print(f'❌ Error Resend: {e}')
 
 @app.get('/')
 def root():
@@ -66,9 +56,7 @@ def health_check():
 @app.get('/debug-env')
 def debug_env():
     return {
-        'mail_username_exists': bool(os.getenv('MAIL_USERNAME')),
-        'mail_password_exists': bool(os.getenv('MAIL_PASSWORD')),
-        'mail_username_value':  os.getenv('MAIL_USERNAME'),
+        'resend_key_exists': bool(os.getenv('RESEND_API_KEY')),
     }
 
 @app.post('/contact', response_model=schemas.ContactResponse)
@@ -81,11 +69,13 @@ async def create_contact(
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
-    if os.getenv('MAIL_USERNAME') and os.getenv('MAIL_PASSWORD'):
+
+    if os.getenv('RESEND_API_KEY'):
         background_tasks.add_task(
             send_email_notification,
             contact.name,
             contact.email,
             contact.message
         )
+
     return db_message
