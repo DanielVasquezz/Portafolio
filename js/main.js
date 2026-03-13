@@ -1,4 +1,4 @@
-import { postContact } from "./api";
+import { postContact } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     
